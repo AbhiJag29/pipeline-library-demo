@@ -1,25 +1,35 @@
-@Library('mylibrary') _
-
-import com.cleverbuilder.GlobalVars
-import com.cleverbuilder.SampleClass
+@Library('pipeline_library')_
 
 pipeline {
-    agent any
-    stages {
-        stage('Demo') {
-            steps {
-                echo 'Hello, world'
-                sayHello 'Dave'
-
-                echo 'The value of foo is : ' + GlobalVars.foo
-
-                script {
-                    def person = new SampleClass()
-                    person.age = 21
-                    person.increaseAge(10)
-                    echo 'Incremented age, is now : ' + person.age
-                }
-            }
-        }
-    }
+agent any
+stages{
+stage('Demo') {
+steps
+{
+echo 'Hello...'
+sayHello 'Abhiraj here '
+}
+}
+stage("build")
+{
+steps
+{
+script{
+def filePath = readFile "Hello.csv"
+def lines = filePath.readLines()
+def linesbyline = filePath.readLines()
+for (line in linesbyline) {
+println "$line"}
+}
+}
+}
+}
+post {
+always {
+emailext body: '${env.BUILD_URL} has result ${currentBuild.result}', subject: 'test email', to: 'abhiraj.2998@gmail.com'
+mail to: 'abhiraj.2998@gmail.com',
+subject: "Status of pipeline: ${currentBuild.fullDisplayName}",
+body: "${env.BUILD_URL} has result ${currentBuild.result}"
+}
+}
 }
